@@ -1,9 +1,20 @@
 const express = require('express');
 const app = express();
 const cors = require("cors");
-
 require("dotenv").config();
+const pool = require("./config/db");
 
+// Auto-create users table on startup
+pool.query(`
+  CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`).then(() => console.log("Users table verified/created successfully"))
+  .catch(err => console.error("Table creation error:", err.message));
 const authRoutes = require('./routes/authRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const userRoutes = require('./routes/userRoutes');
