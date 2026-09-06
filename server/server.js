@@ -11,11 +11,7 @@ const budgetRoutes = require('./routes/budgetRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const recurringRoutes = require('./routes/recurringRoutes');
 const authMiddleware = require('./middleware/auth');
-
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000'
-}));
-
+app.use(cors());
 app.use(express.json()); // reads json data
 
 // test route
