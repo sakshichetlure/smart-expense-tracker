@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001/api",
+  baseURL: "https://smart-expense-tracker-gueq.onrender.com/api",
 });
 
 // Attach JWT token automatically
