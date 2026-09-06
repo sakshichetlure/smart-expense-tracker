@@ -29,6 +29,35 @@ pool.query(`
   );
 `).then(() => console.log("Expenses table verified/created successfully"))
   .catch(err => console.error("Expenses table creation error:", err.message));
+  // Auto-create supporting tables
+pool.query(`
+  CREATE TABLE IF NOT EXISTS recurring_expenses (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    amount NUMERIC NOT NULL,
+    frequency VARCHAR(50) DEFAULT 'monthly',
+    next_due_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS budgets (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    category VARCHAR(100) NOT NULL,
+    monthly_limit NUMERIC NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS plans (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    target_amount NUMERIC NOT NULL,
+    saved_amount NUMERIC DEFAULT 0,
+    target_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`).then(() => console.log("All supporting tables verified/created successfully"))
+  .catch(err => console.error("Supporting tables error:", err.message));
 const authRoutes = require('./routes/authRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const userRoutes = require('./routes/userRoutes');
