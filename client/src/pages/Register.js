@@ -21,6 +21,8 @@ function Register() {
       alert("Registration successful! Please login.");
       navigate("/");
     } catch (error) {
+    console.error("EXACT ERROR:", error.response?.data || error.message);
+    alert(error.response?.data?.message || error.response?.data || error.message);
       alert("Registration failed. Email might already exist.");
     } finally {
       setLoading(false);
