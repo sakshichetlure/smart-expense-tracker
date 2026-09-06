@@ -51,15 +51,21 @@ pool.query(`
     monthly_limit NUMERIC NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
-
-  CREATE TABLE IF NOT EXISTS plans (
+// Drop old incomplete recurring table and recreate
+pool.query(`
+  DROP TABLE IF EXISTS recurring_expenses;
+  CREATE TABLE recurring_expenses (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    target_amount NUMERIC NOT NULL,
-    saved_amount NUMERIC DEFAULT 0,
-    target_date DATE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    amount NUMERIC(10, 2) NOT NULL,
+    category VARCHAR(100) NOT NULL DEFAULT 'Other',
+    frequency VARCHAR(50) DEFAULT 'monthly',
+    start_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    next_due_date DATE NOT NULL,
+    status VARCHAR(20) DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
-`).then(() => console.log("All tables verified/created successfully"))
-  .catch(err => console.error("Supporting tables error:", err.message));
+`).then(() => console.log("recurring_expenses table cleanly recreated"))
+  .catch(err => console.error("Recurring table recreation error:", err.message));
+  
