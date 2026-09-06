@@ -16,6 +16,19 @@ pool.query(`
   );
 `).then(() => console.log("Users table verified/created successfully"))
   .catch(err => console.error("Table creation error:", err.message));
+  // Auto-create expenses table
+pool.query(`
+  CREATE TABLE IF NOT EXISTS expenses (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    amount NUMERIC NOT NULL,
+    category VARCHAR(255) NOT NULL,
+    date DATE DEFAULT CURRENT_DATE,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`).then(() => console.log("Expenses table verified/created successfully"))
+  .catch(err => console.error("Expenses table creation error:", err.message));
 const authRoutes = require('./routes/authRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const userRoutes = require('./routes/userRoutes');
