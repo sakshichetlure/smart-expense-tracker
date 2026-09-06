@@ -29,9 +29,24 @@ pool.query(`
   );
 `).then(() => console.log("Expenses table verified/created successfully"))
   .catch(err => console.error("Expenses table creation error:", err.message));
-  // Auto-create recurring, budgets, and plans tables
+  // Auto-create expenses table
 pool.query(`
-  CREATE TABLE IF NOT EXISTS recurring_expenses (
+  CREATE TABLE IF NOT EXISTS expenses (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    amount NUMERIC NOT NULL,
+    category VARCHAR(255) NOT NULL,
+    date DATE DEFAULT CURRENT_DATE,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`).then(() => console.log("Expenses table verified/created successfully"))
+  .catch(err => console.error("Expenses table creation error:", err.message));
+
+// Drop and recreate recurring_expenses table cleanly
+pool.query(`
+  DROP TABLE IF EXISTS recurring_expenses;
+  CREATE TABLE recurring_expenses (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
@@ -43,14 +58,10 @@ pool.query(`
     status VARCHAR(20) DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
+`).then(() => console.log("recurring_expenses table cleanly recreated"))
+  .catch(err => console.error("Recurring table recreation error:", err.message));
 
-  CREATE TABLE IF NOT EXISTS budgets (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    category VARCHAR(100) NOT NULL,
-    monthly_limit NUMERIC NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  );
+const authRoutes = require('./routes/authRoutes');
 // Drop old incomplete recurring table and recreate
 pool.query(`
   DROP TABLE IF EXISTS recurring_expenses;
