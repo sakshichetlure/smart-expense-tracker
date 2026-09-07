@@ -6,8 +6,11 @@ app.use(cors({
   origin: '*',
   credentials: true
 }));
+app.use(express.json());
+app.use('/api/budgets', budgetRoutes);
 process.env.JWT_SECRET = process.env.JWT_SECRET || "mysecrettokenkey12345";
 const pool = require("./config/db");
+const budgetRoutes = require('./routes/budgetRoutes');
 
 // Auto-create users table on startup
 pool.query(`
