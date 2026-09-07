@@ -74,20 +74,22 @@ pool.query(`
   );
 `).then(() => console.log('recurring_expenses table cleanly recreated'))
   .catch(err => console.error('recurring_expenses table error:', err.message));
-
-// Create budgets table
+// Create budgets table and add missing columns
 pool.query(`
   CREATE TABLE IF NOT EXISTS budgets (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     category VARCHAR(100) NOT NULL,
     amount NUMERIC(10, 2) NOT NULL,
-    month INTEGER NOT NULL,
-    year INTEGER NOT NULL,
+    month INTEGER NOT NULL DEFAULT EXTRACT(MONTH FROM CURRENT_DATE),
+    year INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
-`).then(() => console.log('Budgets table verified/created successfully'))
+  ALTER TABLE budgets ADD COLUMN IF NOT EXISTS month INTEGER NOT NULL DEFAULT EXTRACT(MONTH FROM CURRENT_DATE);
+  ALTER TABLE budgets ADD COLUMN IF NOT EXISTS year INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE);
+`).then(() => console.log('Budgets table & columns verified successfully'))
   .catch(err => console.error('Budgets table error:', err.message));
+
 
 // Port listener
 const PORT = process.env.PORT || 5000;
