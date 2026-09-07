@@ -17,10 +17,10 @@ exports.getRecurringExpenses = async (req, res) => {
 
 // Add new recurring expense
 exports.addRecurringExpense = async (req, res) => {
-  const { title, amount, category, frequency, next_due_date } = req.body;
+ const { title, amount, frequency, next_due_date } = req.body;
+const category = req.body.category || 'General';
   const userId = req.user?.id || 1;
-
-  if (!title || !amount || !category || !next_due_date) {
+ if (!title || !amount || !category || !next_due_date) {
     return res.status(400).json({ error: "All fields are required" });
   }
 

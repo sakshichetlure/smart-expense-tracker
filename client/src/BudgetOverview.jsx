@@ -8,7 +8,7 @@ export default function BudgetOverview({ userId = 1 }) {
   const [limit, setLimit] = useState('');
 
   const fetchStatus = () => {
-    axios.get('http://localhost:3001/api/budgets/status/' + userId)
+    axios.get('https://smart-expense-tracker-backend.onrender.com/api/budgets/status/' + userId)
       .then((res) => setBudgetStatuses(res.data))
       .catch((err) => console.error("Error fetching budget status:", err));
   };

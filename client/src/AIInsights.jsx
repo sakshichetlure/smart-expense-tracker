@@ -5,7 +5,7 @@ export default function AIInsights({ userId = 1 }) {
   const [insights, setInsights] = useState([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:3001/api/ai/insights/${userId}`)
+    axios.get(`https://smart-expense-tracker-backend.onrender.com/api/ai/insights/${userId}`)
       .then((res) => {
         if (res.data.success) {
           setInsights(res.data.insights);
