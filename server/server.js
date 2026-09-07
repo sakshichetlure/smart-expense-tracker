@@ -10,6 +10,8 @@ app.use(cors({
 app.use(express.json());
 const budgetRoutes = require('./routes/budgetRoutes');
 app.use('/api/budgets', budgetRoutes);
+const authRoutes = require('./routes/authRoutes');
+app.use('/api', authRoutes);
 process.env.JWT_SECRET = process.env.JWT_SECRET || "mysecrettokenkey12345";
 const pool = require("./config/db");
 // Auto-create users table on startup
@@ -67,8 +69,6 @@ pool.query(`
   );
 `).then(() => console.log("recurring_expenses table cleanly recreated"))
   .catch(err => console.error("Recurring table recreation error:", err.message));
-
-const authRoutes = require('./routes/authRoutes');
 // Drop old incomplete recurring table and recreate
 pool.query(`
   DROP TABLE IF EXISTS recurring_expenses;
