@@ -2,6 +2,10 @@ const express = require('express');
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
+app.use(cors({
+  origin: '*',
+  credentials: true
+}));
 process.env.JWT_SECRET = process.env.JWT_SECRET || "mysecrettokenkey12345";
 const pool = require("./config/db");
 
