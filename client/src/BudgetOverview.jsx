@@ -8,7 +8,7 @@ export default function BudgetOverview({ userId = 1 }) {
   const [limit, setLimit] = useState('');
 
   const fetchStatus = () => {
-    axios.get('https://smart-expense-tracker-backend.onrender.com/api/budgets/status/' + userId)
+  axios.get('https://smart-expense-trackerr.onrender.com/api/budgets/status/' + userId)
       .then((res) => setBudgetStatuses(res.data))
       .catch((err) => console.error("Error fetching budget status:", err));
   };
@@ -21,7 +21,7 @@ export default function BudgetOverview({ userId = 1 }) {
     e.preventDefault();
     if (!limit) return;
     try {
-      await axios.post('https://smart-expense-tracker-backend.onrender.com/api/budgets/set', {
+      await axios.post('https://smart-expense-trackerr.onrender.com/api/budgets/set', {
         userId,
         category,
         monthlyLimit: parseFloat(limit)
