@@ -113,6 +113,11 @@ const seedPastExpenses = async () => {
   }
 };
 seedPastExpenses();
+// Log users to see valid accounts
+pool.query("SELECT id, name, email FROM users").then(res => {
+  console.log("=== REGISTERED USERS ===");
+  console.table(res.rows);
+}).catch(err => console.error("Users fetch error:", err.message));
 
 // Port listener
 const PORT = process.env.PORT || 5000;
