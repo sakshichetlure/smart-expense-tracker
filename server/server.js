@@ -1,44 +1,41 @@
 const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+const { pool } = require('./config/db');
+
 const app = express();
-const cors = require("cors");
-require("dotenv").config();
 
-// CORS Middleware
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-// Body parser
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-// Routes Registration
+// Routes
 const authRoutes = require('./routes/authRoutes');
-app.use('/api', authRoutes);
-
 const budgetRoutes = require('./routes/budgetRoutes');
-app.use('/api/budgets', budgetRoutes);
-
 const expenseRoutes = require('./routes/expenseRoutes');
-app.use('/api/expenses', expenseRoutes);
-
 const recurringRoutes = require('./routes/recurringRoutes');
-app.use('/api/recurring', recurringRoutes);
-
 const userRoutes = require('./routes/userRoutes');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/budgets', budgetRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/recurring', recurringRoutes);
 app.use('/api/users', userRoutes);
 
-// Environment & Database
-process.env.JWT_SECRET = process.env.JWT_SECRET || "mysecrettokenkey12345";
-const pool = require("./config/db");
-
-// Health check / Root route
+// Root route
 app.get('/', (req, res) => {
-  res.send('Smart Expense Tracker Backend is Running!');
+  res.send('Smart Expense Tracker API is running');
 });
 
-// Auto-create users table
+// Database connection check & Table auto-creation
+pool.connect()
+  .then(client => {
+    console.log('Database connected successfully');
+    client.release();
+  })
+  .catch(err => console.error('Database connection error:', err.message));
+
+// Create users table
 pool.query(`
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -47,49 +44,40 @@ pool.query(`
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
-`)
-.then(() => console.log("Users table verified/created successfully"))
-.catch(err => console.error("Users table creation error:", err.message));
+`).then(() => console.log('Users table verified/created successfully'))
+  .catch(err => console.error('Users table error:', err.message));
 
-// Auto-create expenses table
+// Create expenses table
 pool.query(`
   CREATE TABLE IF NOT EXISTS expenses (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    category VARCHAR(100) NOT NULL,
     amount NUMERIC(10, 2) NOT NULL,
-    category VARCHAR(100) NOT NULL DEFAULT 'other',
+    date DATE NOT NULL,
     description TEXT,
-    date DATE NOT NULL DEFAULT CURRENT_DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
-`)
-.then(() => console.log("Expenses table verified/created successfully"))
-.catch(err => console.error("Expenses table creation error:", err.message));
+`).then(() => console.log('Expenses table verified/created successfully'))
+  .catch(err => console.error('Expenses table error:', err.message));
 
-// Auto-create recurring expenses table
+// Create recurring_expenses table
 pool.query(`
   CREATE TABLE IF NOT EXISTS recurring_expenses (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(255),
+    category VARCHAR(100) NOT NULL,
     amount NUMERIC(10, 2) NOT NULL,
-    category VARCHAR(100) NOT NULL DEFAULT 'other',
     frequency VARCHAR(50) DEFAULT 'monthly',
-    start_date DATE NOT NULL DEFAULT CURRENT_DATE,
-    next_due_date DATE NOT NULL,
-    status VARCHAR(20) DEFAULT 'active',
+    start_date DATE DEFAULT CURRENT_DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
-`)
-.then(() => console.log("recurring_expenses table cleanly recreated"))
-.catch(err => console.error("recurring_expenses table error:", err.message));
+`).then(() => console.log('recurring_expenses table cleanly recreated'))
+  .catch(err => console.error('recurring_expenses table error:', err.message));
 
-// Port listener
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-// Auto-create budgets table
-pool.query(
+// Create budgets table
+pool.query(`
   CREATE TABLE IF NOT EXISTS budgets (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -99,5 +87,11 @@ pool.query(
     year INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
-).then(() => console.log('Budgets table verified/created successfully'))
+`).then(() => console.log('Budgets table verified/created successfully'))
   .catch(err => console.error('Budgets table error:', err.message));
+
+// Port listener
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
