@@ -88,3 +88,16 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+// Auto-create budgets table
+pool.query(
+  CREATE TABLE IF NOT EXISTS budgets (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    category VARCHAR(100) NOT NULL,
+    amount NUMERIC(10, 2) NOT NULL,
+    month INTEGER NOT NULL,
+    year INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+).then(() => console.log('Budgets table verified/created successfully'))
+  .catch(err => console.error('Budgets table error:', err.message));
