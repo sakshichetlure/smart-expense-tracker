@@ -21,7 +21,7 @@ export default function BudgetOverview({ userId = 1 }) {
     e.preventDefault();
     if (!limit) return;
     try {
-      axios.post(${process.env.REACT_APP_API_URL || 'https://your-render-app-name.onrender.com'}/api/budgets/set, ...)
+      await axios.post('https://smart-expense-tracker-backend.onrender.com/api/budgets/set', {
         userId,
         category,
         monthlyLimit: parseFloat(limit)
