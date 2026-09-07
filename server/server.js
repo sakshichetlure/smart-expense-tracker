@@ -4,7 +4,8 @@ const cors = require("cors");
 require("dotenv").config();
 app.use(cors({
   origin: '*',
-  credentials: true
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 const budgetRoutes = require('./routes/budgetRoutes');
