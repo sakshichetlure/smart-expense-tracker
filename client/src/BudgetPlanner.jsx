@@ -8,7 +8,7 @@ export default function BudgetPlanner({ userId = 1 }) {
   const [cutPercent, setCutPercent] = useState(20);
 
   const fetchForecast = () => {
-    axios.get(`https://smart-expense-tracker-backend.onrender.com/api/ai/forecast/${userId}?savingsGoal=${savingsGoal}&cutCategory=${cutCategory}&cutPercent=${cutPercent}`)
+    axios.get(`https://smart-expense-trackerr.onrender.com/api/ai/forecast/${userId}?savingsGoal=${savingsGoal}&cutCategory=${cutCategory}&cutPercent=${cutPercent}`)
       .then((res) => {
         if (res.data.success) {
           setData(res.data);
