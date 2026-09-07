@@ -7,11 +7,10 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+const budgetRoutes = require('./routes/budgetRoutes');
 app.use('/api/budgets', budgetRoutes);
 process.env.JWT_SECRET = process.env.JWT_SECRET || "mysecrettokenkey12345";
 const pool = require("./config/db");
-const budgetRoutes = require('./routes/budgetRoutes');
-
 // Auto-create users table on startup
 pool.query(`
   CREATE TABLE IF NOT EXISTS users (
