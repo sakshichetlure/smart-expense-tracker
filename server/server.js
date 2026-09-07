@@ -83,4 +83,7 @@ pool.query(`
   );
 `).then(() => console.log("recurring_expenses table cleanly recreated"))
   .catch(err => console.error("Recurring table recreation error:", err.message));
-  
+  const PORT = process.env.PORT || 5000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on port ${PORT}`);
+});
