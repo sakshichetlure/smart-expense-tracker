@@ -14,12 +14,14 @@ const budgetRoutes = require('./routes/budgetRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const recurringRoutes = require('./routes/recurringRoutes');
 const userRoutes = require('./routes/userRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/recurring', recurringRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Root route
 app.get('/', (req, res) => {
