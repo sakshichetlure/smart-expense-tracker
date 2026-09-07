@@ -118,7 +118,7 @@ pool.query("SELECT id, name, email FROM users").then(res => {
   console.log("=== REGISTERED USERS ===");
   console.table(res.rows);
 }).catch(err => console.error("Users fetch error:", err.message));
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 (async () => {
   const hash = await bcrypt.hash('123456', 10);
   await pool.query("UPDATE users SET password = $1 WHERE email = 'sakshi_final@gmail.com'", [hash]);
