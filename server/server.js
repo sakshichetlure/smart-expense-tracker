@@ -91,7 +91,28 @@ pool.query(`
   ALTER TABLE budgets ADD COLUMN IF NOT EXISTS year INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE);
 `).then(() => console.log('Budgets table & columns verified successfully'))
   .catch(err => console.error('Budgets table error:', err.message));
-
+// Seed historical past data for userId 1
+const seedPastExpenses = async () => {
+  try {
+    const check = await pool.query("SELECT COUNT(*) FROM expenses WHERE user_id = 1 AND date < '2026-09-01'");
+    if (parseInt(check.rows[0].count) === 0) {
+      await pool.query(`
+        INSERT INTO expenses (user_id, description, amount, category, date) VALUES
+        (1, 'Groceries & Provisions', 4200, 'Food', '2026-07-10'),
+        (1, 'Electricity & Utilities', 2100, 'Bills', '2026-07-15'),
+        (1, 'Fuel & Transit', 1800, 'Transport', '2026-07-22'),
+        (1, 'Weekend Dining', 2500, 'Food', '2026-08-05'),
+        (1, 'Internet Bill', 1200, 'Bills', '2026-08-12'),
+        (1, 'Cab & Metro', 1600, 'Transport', '2026-08-20'),
+        (1, 'Shopping & Clothes', 3400, 'Shopping', '2026-08-25');
+      `);
+      console.log('Historical expense records seeded successfully into live DB!');
+    }
+  } catch (err) {
+    console.error('Seeding error:', err.message);
+  }
+};
+seedPastExpenses();
 
 // Port listener
 const PORT = process.env.PORT || 5000;
