@@ -2,7 +2,7 @@ const db = require('../config/db');
 
 exports.setBudget = async (req, res) => {
   try {
-    const { category, userId = 1 } = req.body;
+    const { category, userId } = req.body;
     // Frontend nunchi monthlyLimit vachina leda limit vachina handle chesthundi
     const limitAmount = req.body.monthlyLimit || req.body.limit;
     
@@ -47,7 +47,7 @@ exports.setBudget = async (req, res) => {
 
 exports.getBudgetStatus = async (req, res) => {
   try {
-    const userId = req.params.userId || 1;
+    const userId = req.params.userId || req.query.userId || (req.user && req.user.id);
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
 
