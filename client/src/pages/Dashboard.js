@@ -48,12 +48,20 @@ function Dashboard() {
   const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
-     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-    const uid = storedUser.id || localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+    let uid = null;
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        uid = payload.id || payload.userId;
+      } catch (e) {
+        console.error("Token error:", e);
+      }
+    }
 
     const [expenseRes, budgetRes] = await Promise.allSettled([
-      axios.get(`/expenses?userId=${uid}`),
-      axios.get(`/budgets/status/${uid}`),
+      axios.get(uid ? `/expenses?userId=${uid}` : "/expenses"),
+      axios.get(uid ? `/budgets/status/${uid}` : "/budgets"),
     ]);
 
       if (expenseRes.status === "fulfilled") {
