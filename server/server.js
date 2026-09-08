@@ -15,7 +15,7 @@ const expenseRoutes = require('./routes/expenseRoutes');
 const recurringRoutes = require('./routes/recurringRoutes');
 const userRoutes = require('./routes/userRoutes');
 const aiRoutes = require('./routes/aiRoutes');
-
+app.use('/api', authRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/expenses', expenseRoutes);
