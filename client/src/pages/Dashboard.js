@@ -48,10 +48,13 @@ function Dashboard() {
   const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
-      const [expenseRes, budgetRes] = await Promise.allSettled([
-        axios.get("/expenses"),
-        axios.get("/budgets"),
-      ]);
+     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+    const uid = storedUser.id || localStorage.getItem("userId");
+
+    const [expenseRes, budgetRes] = await Promise.allSettled([
+      axios.get(`/expenses?userId=${uid}`),
+      axios.get(`/budgets/status/${uid}`),
+    ]);
 
       if (expenseRes.status === "fulfilled") {
         setExpenses(expenseRes.value.data || []);
