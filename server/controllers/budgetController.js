@@ -47,7 +47,10 @@ exports.setBudget = async (req, res) => {
 
 exports.getBudgetStatus = async (req, res) => {
   try {
-    const userId = req.params.userId || req.query.userId || (req.user && req.user.id);
+    const userId = req.params.userId || req.query.userId;
+if (!userId || userId === 'undefined' || userId === 'null') {
+  return res.json([]);
+}
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
 
