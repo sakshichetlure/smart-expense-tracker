@@ -330,7 +330,7 @@ function Dashboard() {
       <AIInsights budgets={budgets} expenses={expenses} />
       <BudgetPlanner expenses={expenses} />
       <RecurringExpenses />
-      <BudgetRollover userId={1}/>
+      <BudgetRollover budgets={budgets} />
       <SeasonalExpensePlanner />
       <MoMComparison userId={1} />
 
