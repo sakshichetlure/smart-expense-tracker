@@ -1,98 +1,40 @@
-import React, { useState, useEffect } from "react";
-import axios from "./services/api";
-import { FaPiggyBank, FaArrowRight, FaToggleOn, FaToggleOff } from "react-icons/fa";
+import React, { useState } from 'react';
 
-function BudgetRollover({ userId = 1 }) {
-  const [rolloverEnabled, setRolloverEnabled] = useState(true);
-  const [lastMonthSavings, setLastMonthSavings] = useState(0);
-  const [currentMonthBudget, setCurrentMonthBudget] = useState(0);
-
-  useEffect(() => {
-    const fetchBudgetAndSavings = async () => {
-      try {
-        const now = new Date();
-        const curMonth = now.getMonth() + 1;
-        const curYear = now.getFullYear();
-        const prevMonth = curMonth === 1 ? 12 : curMonth - 1;
-        const prevYear = curMonth === 1 ? curYear - 1 : curYear;
-
-        // Fetch current and previous month comparisons
-        const res = await axios.get(
-          `/budgets/comparison?userId=${userId}&curMonth=${curMonth}&curYear=${curYear}&prevMonth=${prevMonth}&prevYear=${prevYear}`
-        );
-
-        if (res.data) {
-          const prevTotalBudget = res.data.previousMonth?.totalBudget || 0;
-          const prevTotalSpent = res.data.previousMonth?.totalSpent || 0;
-          const surplus = Math.max(0, prevTotalBudget - prevTotalSpent);
-
-          setLastMonthSavings(surplus);
-          setCurrentMonthBudget(res.data.currentMonth?.totalBudget || 0);
-        }
-      } catch (err) {
-        // Fallback demo values if prior month records are not yet logged
-        setLastMonthSavings(1850);
-        setCurrentMonthBudget(12000);
-      }
-    };
-
-    fetchBudgetAndSavings();
-  }, [userId]);
-
-  const effectiveBudget = rolloverEnabled
-    ? currentMonthBudget + lastMonthSavings
-    : currentMonthBudget;
+export default function BudgetRollover() {
+  const [enabled, setEnabled] = useState(false);
 
   return (
-    <div className="card border-0 shadow-soft rounded-xl mb-4 p-3">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div className="d-flex align-items-center gap-2">
-          <FaPiggyBank className="text-success" />
-          <h6 className="fw-semibold m-0">Automatic Budget Rollover</h6>
-        </div>
-        <button
-          className="btn btn-link p-0 text-decoration-none d-flex align-items-center gap-1 text-muted"
-          onClick={() => setRolloverEnabled(!rolloverEnabled)}
-        >
-          <span className="small">{rolloverEnabled ? "Enabled" : "Disabled"}</span>
-          {rolloverEnabled ? (
-            <FaToggleOn size={22} className="text-success" />
-          ) : (
-            <FaToggleOff size={22} className="text-secondary" />
-          )}
-        </button>
+    <div style={{ background: '#fff', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 6px rgba(0,0,0,0.05)', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+        <h3 style={{ margin: 0, fontSize: '18px', color: '#1f2937' }}>🔄 Automatic Budget Rollover</h3>
+        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', gap: '8px', fontSize: '14px', color: '#4b5563' }}>
+          <span>{enabled ? 'Enabled' : 'Disabled'}</span>
+          <input
+            type="checkbox"
+            checked={enabled}
+            onChange={() => setEnabled(!enabled)}
+            style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+          />
+        </label>
       </div>
 
-      <div className="row g-3 text-center">
-        <div className="col-4">
-          <div className="p-2 border rounded-lg bg-light">
-            <small className="text-muted d-block">Base Budget</small>
-            <strong className="text-dark">₹{currentMonthBudget.toLocaleString()}</strong>
-          </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', background: '#f9fafb', padding: '16px', borderRadius: '8px', textAlign: 'center' }}>
+        <div>
+          <div style={{ fontSize: '12px', color: '#6b7280' }}>Base Budget</div>
+          <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#111827' }}>₹0</div>
         </div>
-
-        <div className="col-4">
-          <div className="p-2 border rounded-lg bg-light">
-            <small className="text-muted d-block">Unused Surplus</small>
-            <strong className="text-success">+₹{lastMonthSavings.toLocaleString()}</strong>
-          </div>
+        <div>
+          <div style={{ fontSize: '12px', color: '#6b7280' }}>Unused Surplus</div>
+          <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>+₹0</div>
         </div>
-
-        <div className="col-4">
-          <div className="p-2 border rounded-lg bg-success bg-opacity-10 border-success">
-            <small className="text-success fw-semibold d-block">Available Cap</small>
-            <strong className="text-success">₹{effectiveBudget.toLocaleString()}</strong>
-          </div>
+        <div>
+          <div style={{ fontSize: '12px', color: '#6b7280' }}>Available Cap</div>
+          <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#2563eb' }}>₹0</div>
         </div>
       </div>
-
-      <small className="text-muted mt-2 d-block">
-        {rolloverEnabled
-          ? "Unspent surplus from previous month has been added to this month's spending allowance."
-          : "Surplus carryover is disabled. Showing strict base allowance only."}
-      </small>
+      <p style={{ color: '#6b7280', fontSize: '13px', margin: '10px 0 0 0' }}>
+        Unspent surplus from previous month has been added to this month's spending allowance.
+      </p>
     </div>
   );
 }
-
-export default BudgetRollover;
