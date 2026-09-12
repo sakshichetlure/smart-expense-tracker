@@ -11,7 +11,7 @@ export default function AIInsights({ userId }) {
       const payload = JSON.parse(atob(token.split('.')[1]));
       currentUid = payload.id || payload.userId;
     } catch (e) {
-      console.error("Token decode error:", e);
+      console.error(e);
     }
   }
 
@@ -21,7 +21,13 @@ export default function AIInsights({ userId }) {
       return;
     }
     axios.get(`https://smart-expense-trackerr.onrender.com/api/ai/insights/${currentUid}`)
-      .then((res) => setInsights(res.data || []))
+      .then((res) => {
+        if (Array.isArray(res.data)) {
+          setInsights(res.data);
+        } else {
+          setInsights([]);
+        }
+      })
       .catch(() => setInsights([]));
   }, [currentUid]);
 
@@ -38,13 +44,13 @@ export default function AIInsights({ userId }) {
         🤖 AI Spending Insights & Recommendations
       </h3>
 
-      {insights.length === 0 ? (
+      {!Array.isArray(insights) || insights.length === 0 ? (
         <p style={{ color: '#6b7280', margin: 0 }}>
           No spending insights available yet. Add your expenses to see smart recommendations!
         </p>
       ) : (
         insights.map((item, index) => {
-          const style = getStyle(item.type);
+          const style = getStyle(item?.type);
           return (
             <div
               key={index}
@@ -57,10 +63,10 @@ export default function AIInsights({ userId }) {
               }}
             >
               <div style={{ fontWeight: '600', color: style.text, marginBottom: '4px' }}>
-                {style.icon} {item.title || item.category || 'Insight'}
+                {style.icon} {item?.title || item?.category || 'Insight'}
               </div>
               <div style={{ fontSize: '13px', color: style.text, opacity: 0.9 }}>
-                {item.message}
+                {item?.message}
               </div>
             </div>
           );
