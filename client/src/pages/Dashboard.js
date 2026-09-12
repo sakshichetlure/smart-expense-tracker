@@ -148,22 +148,31 @@ function Dashboard() {
       },
     ],
   };
+const lineLabels = Object.keys(monthlyTotals).length === 1 
+    ? ["Aug", ...Object.keys(monthlyTotals)] 
+    : Object.keys(monthlyTotals);
+
+  const lineValues = Object.keys(monthlyTotals).length === 1 
+    ? [0, ...Object.values(monthlyTotals)] 
+    : Object.values(monthlyTotals);
 
   const lineChartData = {
-    labels: Object.keys(monthlyTotals),
+    labels: lineLabels,
     datasets: [
       {
         label: "Trend",
-        data: Object.values(monthlyTotals),
+        data: lineValues,
         borderColor: "#6366f1",
-        backgroundColor: "rgba(99, 102, 241, 0.1)",
+        backgroundColor: "rgba(99, 102, 241, 0.15)",
         tension: 0.3,
         fill: true,
-      },
-    ],
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: "#6366f1"
+      }
+    ]
   };
-
-  const chartOptions = {
+ const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: { legend: { display: false } },
