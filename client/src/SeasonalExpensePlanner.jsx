@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import { FaCalendarAlt, FaPlus, FaCheckCircle, FaTrashAlt } from "react-icons/fa";
 
 function SeasonalExpensePlanner() {
-  const [plans, setPlans] = useState([
-    { id: 1, name: "Festival / Festive Shopping", targetAmount: 15000, savedAmount: 9000, targetDate: "2026-11-01" },
-    { id: 2, name: "Vehicle Insurance Renewal", targetAmount: 8500, savedAmount: 8500, targetDate: "2026-12-15" }
-  ]);
-
+ const [plans, setPlans] = useState([]);
   const [name, setName] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
   const [savedAmount, setSavedAmount] = useState("");
