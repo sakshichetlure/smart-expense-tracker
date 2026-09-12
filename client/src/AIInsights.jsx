@@ -1,63 +1,48 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 
-export default function AIInsights({ userId }) {
-  const [insights, setInsights] = useState([]);
+export default function AIInsights({ budgets = [], expenses = [] }) {
+  const newInsights = [];
+  const bList = Array.isArray(budgets) ? budgets : [];
+  const eList = Array.isArray(expenses) ? expenses : [];
 
-  const token = localStorage.getItem("token");
-  let currentUid = userId;
-  if (!currentUid && token) {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      currentUid = payload.id || payload.userId;
-    } catch (e) {
-      console.error(e);
+  // Check budget limits
+  bList.forEach((b) => {
+    const spent = Number(b.spent ?? b.current_spending ?? b.amount_spent ?? b.total_spent ?? 0);
+    const limit = Number(b.limit ?? b.budget_limit ?? b.amount ?? b.budget ?? 0);
+    const cat = b.category || b.name || 'Expense';
+
+    if (limit > 0) {
+      const ratio = (spent / limit) * 100;
+      if (ratio >= 100) {
+        newInsights.push({
+          type: 'danger',
+          title: `Overbudget: ${cat}`,
+          message: `You exceeded your ₹${limit.toLocaleString()} budget on ${cat} by spending ₹${spent.toLocaleString()} (${Math.round(ratio)}%). Consider pausing discretionary purchases.`
+        });
+      } else if (ratio >= 80) {
+        newInsights.push({
+          type: 'warning',
+          title: `High Spending in ${cat}`,
+          message: `You've used ${Math.round(ratio)}% of your ₹${limit.toLocaleString()} limit for ${cat}. Slow down spending to avoid deficit.`
+        });
+      }
+    }
+  });
+
+  // Direct expense fallback if budgets array is empty
+  if (newInsights.length === 0 && eList.length > 0) {
+    const totalFood = eList
+      .filter((e) => (e.category || '').toLowerCase().includes('food'))
+      .reduce((sum, e) => sum + Number(e.amount || 0), 0);
+
+    if (totalFood > 0) {
+      newInsights.push({
+        type: 'danger',
+        title: 'Overbudget: Food',
+        message: `Total Food spending reached ₹${totalFood.toLocaleString()}. This exceeds the allocated threshold.`
+      });
     }
   }
-
-  useEffect(() => {
-    if (!currentUid) return;
-
-    // Fetch user budgets and expenses to generate real rule-based insights
-    axios.get(`https://smart-expense-trackerr.onrender.com/api/budgets/${currentUid}`)
-      .then((res) => {
-        const budgets = Array.isArray(res.data) ? res.data : (res.data?.budgets || []);
-        const newInsights = [];
-
-        budgets.forEach((b) => {
-          const spent = Number(b.spent || b.current_spending || b.amount_spent || 0);
-          const limit = Number(b.limit || b.budget_limit || b.amount || 0);
-          
-          if (limit > 0) {
-            const ratio = (spent / limit) * 100;
-            if (ratio >= 100) {
-              newInsights.push({
-                type: 'danger',
-                title: `Overbudget: ${b.category || 'Expense'}`,
-                message: `You exceeded your ₹${limit} budget on ${b.category} by spending ₹${spent} (${Math.round(ratio)}%). Consider pausing discretionary purchases.`
-              });
-            } else if (ratio >= 80) {
-              newInsights.push({
-                type: 'warning',
-                title: `High Spending in ${b.category || 'Expense'}`,
-                message: `You've used ${Math.round(ratio)}% of your ₹${limit} limit for ${b.category}. Slow down spending to avoid deficit.`
-              });
-            }
-          }
-        });
-
-        if (newInsights.length === 0 && budgets.length > 0) {
-          newInsights.push({
-            type: 'success',
-            title: 'Spending Discipline',
-            message: 'All your category expenditures are well within budget limits!'
-          });
-        }
-
-        setInsights(newInsights);
-      })
-      .catch(() => setInsights([]));
-  }, [currentUid]);
 
   const getStyle = (type) => {
     if (type === 'danger' || type === 'warning') {
@@ -72,12 +57,12 @@ export default function AIInsights({ userId }) {
         🤖 AI Spending Insights & Recommendations
       </h3>
 
-      {insights.length === 0 ? (
+      {newInsights.length === 0 ? (
         <p style={{ color: '#6b7280', margin: 0 }}>
           No spending insights available yet. Add your expenses to see smart recommendations!
         </p>
       ) : (
-        insights.map((item, index) => {
+        newInsights.map((item, index) => {
           const style = getStyle(item.type);
           return (
             <div
