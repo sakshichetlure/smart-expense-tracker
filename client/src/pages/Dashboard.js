@@ -327,8 +327,8 @@ function Dashboard() {
 
       {/* Integrated Budget & Prediction Widgets */}
       <BudgetOverview />
-      <AIInsights userId={1} />
-      <BudgetPlanner userId={1} />
+      <AIInsights budgets={budgets} expenses={expenses} />
+      <BudgetPlanner expenses={expenses} />
       <RecurringExpenses />
       <BudgetRollover userId={1}/>
       <SeasonalExpensePlanner />
