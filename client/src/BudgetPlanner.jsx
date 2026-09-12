@@ -12,7 +12,7 @@ export default function BudgetPlanner({ expenses = [] }) {
     .reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
 
   // Fallback to top dashboard spend if category matches Food
-  const activeBaseline = matched > 0 ? matched : (selectedCategory === 'Food' ? 6000 : 0);
+ const activeBaseline = matched;
   const potentialSavings = Math.round((activeBaseline * cut) / 100);
   const estimatedNewTotal = Math.max(0, activeBaseline - potentialSavings);
   const isGoalAchievable = potentialSavings >= goal;

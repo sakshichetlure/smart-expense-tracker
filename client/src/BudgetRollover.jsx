@@ -11,7 +11,7 @@ export default function BudgetRollover({ budgets = [] }) {
   }, 0);
 
   // Default demo surplus for new active accounts so the feature is visible
-  const unusedSurplus = 1500; 
+ const unusedSurplus = 0;
   const availableCap = enabled ? (totalBaseBudget + unusedSurplus) : totalBaseBudget;
 
   return (
@@ -34,7 +34,7 @@ export default function BudgetRollover({ budgets = [] }) {
         <div style={{ background: '#f9fafb', padding: '12px', borderRadius: '8px', textAlign: 'center' }}>
           <div style={{ fontSize: '12px', color: '#6b7280' }}>Base Budget</div>
           <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#111827' }}>
-            ₹{totalBaseBudget > 0 ? totalBaseBudget.toLocaleString() : '7,000'}
+           ₹{totalBaseBudget.toLocaleString()}
           </div>
         </div>
 
@@ -48,7 +48,7 @@ export default function BudgetRollover({ budgets = [] }) {
         <div style={{ background: '#eff6ff', padding: '12px', borderRadius: '8px', textAlign: 'center', border: '1px solid #bfdbfe' }}>
           <div style={{ fontSize: '12px', color: '#1e40af' }}>Available Cap</div>
           <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#1d4ed8' }}>
-            ₹{(totalBaseBudget > 0 ? availableCap : (7000 + unusedSurplus)).toLocaleString()}
+           ₹{availableCap.toLocaleString()}
           </div>
         </div>
       </div>
